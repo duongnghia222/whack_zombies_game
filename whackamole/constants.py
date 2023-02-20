@@ -97,6 +97,9 @@ class ImageConstants:
     IMAGEMALLET     = IMAGEBASE + "hammer_rm.png"
     IMAGEHITEFFECT     = IMAGEBASE + "hit_effect_rm.png"
     IMAGEMISSEFFECT     = IMAGEBASE + "miss_effect_rm.png"
+    IMAGEPLAYBUTTON     = IMAGEBASE + "button_play.png"
+    image_sound_button_on     = IMAGEBASE + "button_sound-on.png"
+    image_sound_button_off     = IMAGEBASE + "button_sound-off.png"
 
 
 class MalletConstants:

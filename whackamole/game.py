@@ -38,6 +38,14 @@ class Game:
         self.img_background = image.load(Constants.IMAGEBACKGROUND)
         self.img_background = transform.scale(self.img_background, (Constants.GAMEWIDTH, Constants.GAMEHEIGHT))
 
+        # Load button
+        self.play_button = image.load(Constants.IMAGEPLAYBUTTON)
+        self.play_button = transform.scale(self.play_button, (100, 100))
+        self.play_button_on = image.load(Constants.image_sound_button_on)
+        self.play_button_on = transform.scale(self.play_button_on, (50, 50))
+        self.play_button_off = image.load(Constants.image_sound_button_off)
+        self.play_button_off = transform.scale(self.play_button_off, (50, 50))
+
         # Load hole
         self.img_hole = image.load(Constants.IMAGEHOLE)
         self.img_hole = transform.scale(self.img_hole, (Constants.HOLEWIDTH, Constants.HOLEHEIGHT))
@@ -58,6 +66,7 @@ class Game:
         self.timer = timer
         self.cool_down_time_for_hammer = 0
 
+        self.game_theme_on = True
         # Reset/initialise data
         self.reset()
 
@@ -73,10 +82,10 @@ class Game:
         # Generate hole positions
         self.holes = []
         self.used_holes = []
-        base_row = Constants.GAMEHEIGHT / Constants.HOLEROWS
+        base_row = Constants.GAMEHEIGHT / Constants.HOLEROWS - 50
         base_column = Constants.GAMEWIDTH / Constants.HOLECOLUMNS - 100
         for row in range(Constants.HOLEROWS):
-            rowY = base_row * row
+            rowY = base_row * row + 150
             rowY += (base_row - Constants.HOLEHEIGHT) / 2
             for column in range(Constants.HOLECOLUMNS):
                 thisX = base_column * column + 200
@@ -199,6 +208,10 @@ class Game:
         # Display bg
         self.screen.blit(self.img_background, (0, 0))
 
+        # Display sound button
+        if self.game_theme_on:
+            self.screen.blit(self.play_button_off, (700, 30))
+
         # Display holes
         for position in self.holes:
             self.screen.blit(self.img_hole, position)
@@ -280,10 +293,10 @@ class Game:
         # Click to start indicator
         if self.timer and gameTime == -1:
             # mixer.music.stop()
-            timer_label = self.text.get_label("Click to begin...", scale=2, color=(0, 255, 255))
-            timer_x = (Constants.GAMEWIDTH - timer_label.get_width()) / 2
-            timer_y = (Constants.GAMEHEIGHT - timer_label.get_height()) / 2
-            self.screen.blit(timer_label, (timer_x, timer_y))
+            # timer_label = self.text.get_label("Click to begin...", scale=2, color=(0, 255, 255))
+            timer_x = Constants.GAMEWIDTH / 2 - 50
+            timer_y = Constants.GAMEHEIGHT / 2 - 50
+            self.screen.blit(self.play_button, (timer_x, timer_y))
 
         # Time's up indicator
         if self.timer and endGame:
