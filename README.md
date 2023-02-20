@@ -1,3 +1,3 @@
 # Whack zombie
 
-draw
+draft
