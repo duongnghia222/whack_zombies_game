@@ -3,9 +3,9 @@ class GameConstants:
     Constants used for rendering of main game
     """
 
-    GAMEWIDTH = int(1000*0.85)
-    GAMEHEIGHT = int(600*0.85)
-    GAMEMAXFPS = 60
+    game_width = int(1000 * 0.85)
+    game_height = int(600 * 0.85)
+    game_max_fps = 60
 
 
 class LevelConstants:
@@ -13,9 +13,9 @@ class LevelConstants:
     Constants used to handle leveling
     """
 
-    LEVELGAP        = 10 #score
-    LEVELMOLESPEED  = 5 #% faster
-    LEVELMOLECHANCE = 10 #% less
+    level_gap = 10  # score
+    level_zombie_speed = 5  # % faster
+    level_zombie_chance = 10  # % less
 
 
 class HoleConstants:
@@ -23,91 +23,80 @@ class HoleConstants:
     Constants used in the holes
     """
 
-    HOLEWIDTH       = 100
-    HOLEHEIGHT      = int(HOLEWIDTH*(3/8))
-    HOLEROWS        = 3 # !!
-    HOLECOLUMNS     = 3 # !!
+    hole_width = 100
+    hole_height = int(hole_width * (3 / 8))
+    hole_row = 3  # !!
+    hole_column = 3  # !!
 
     # Checks
-    if HOLEHEIGHT*HOLEROWS > GameConstants.GAMEHEIGHT:
-        raise ValueError("HOLEROWS or HOLEHEIGHT too high (or GAMEHEIGHT too small)")
-    if HOLEWIDTH*HOLECOLUMNS > GameConstants.GAMEWIDTH:
-        raise ValueError("HOLECOLUMNS or HOLEWIDTH too high (or GAMEWIDTH too small)")
+    if hole_height * hole_row > GameConstants.game_height:
+        raise ValueError("hole_row or hole_height too high (or game_height too small)")
+    if hole_width * hole_column > GameConstants.game_width:
+        raise ValueError("hole_column or hole_width too high (or game_width too small)")
 
 
-class MoleConstants:
+class ZombieConstants:
     """
-    Constants used for mole generation and calculations
+    Constants used for zombie_ generation and calculations
     """
 
-    MOLEWIDTH       = int( HoleConstants.HOLEWIDTH*(2/3) )
-    MOLEHEIGHT      = int(MOLEWIDTH)
-    MOLEDEPTH       = 15 #% of height
-    MOLECOOLDOWN    = 500 #ms
+    zombie_width = int(HoleConstants.hole_width * (2 / 3))
+    zombie_height = int(zombie_width)
+    zombie_depth = 15  # % of _height
+    zombie_cooldown = 500  # ms
 
-    MOLESTUNNED     = 1000 #ms
-    MOLEHITHUD      = 500 #ms
-    MOLEMISSHUD     = 250 #ms
+    zombie_stunned = 1000  # ms
+    zombie_hit_hud = 500  # ms
+    zombie_miss_hud = 250  # ms
 
-    MOLECHANCE      = 1/30
-    MOLECOUNT       = 2 # !!
-    MOLEUPMIN       = 0.3 #s
-    MOLEUPMAX       = 2 #s
+    zombie_chance = 1 / 30
+    zombie_count = 2  # !!
+    zombie_up_min = 0.3  # s
+    zombie_up_max = 2  # s
 
     # Checks
-    if MOLECOUNT > HoleConstants.HOLEROWS*HoleConstants.HOLECOLUMNS:
-        raise ValueError("MOLECOUNT too high")
-
-
-class TextConstants:
-    """
-    Constants used for text rendering
-    """
-
-    TEXTTITLE       = "Whack a Zombie"
-    TEXTFONTSIZE    = 15
-    TEXTFONTFILE    = "assets/OxygenMono-Regular.ttf"
+    if zombie_count > HoleConstants.hole_row * HoleConstants.hole_column:
+        raise ValueError("zombie_COUNT too high")
 
 
 class ImageConstants:
     """
-    Constants that are image based
+    Constants that are image_ based
     """
 
-    IMAGEBASE       = "assets/"
+    image_base = "assets/"
 
-    IMAGEBACKGROUND = IMAGEBASE + "background1.jpg"
+    image_background = image_base + "background1.jpg"
 
-    IMAGEMOLENORMAL = IMAGEBASE + "zombie_rm.png"
-    IMAGEMOLEHIT    = IMAGEBASE + "zombie_hit_rm.png"
+    image_zombie_normal = image_base + "zombie_rm.png"
+    image_zombie_hit = image_base + "zombie_hit_rm.png"
 
-    IMAGEHOLE       = IMAGEBASE + "hole2.png"
-    IMAGEMALLET     = IMAGEBASE + "hammer_rm.png"
-    IMAGEHITEFFECT     = IMAGEBASE + "hit_effect_rm.png"
-    IMAGEMISSEFFECT     = IMAGEBASE + "miss_effect_rm.png"
-    IMAGEPLAYBUTTON     = IMAGEBASE + "button_play.png"
-    image_sound_button_on     = IMAGEBASE + "button_sound-on.png"
-    image_sound_button_off     = IMAGEBASE + "button_sound-off.png"
-    image_banner     = IMAGEBASE + "banner.png"
-    image_intro     = IMAGEBASE + "intro_img.png"
+    image_hole = image_base + "hole2.png"
+    image_hammer = image_base + "hammer_rm.png"
+    image_hit_effect = image_base + "hit_effect_rm.png"
+    image_miss_effect = image_base + "miss_effect_rm.png"
+    image_play_button = image_base + "button_play.png"
+    image_sound_button_on = image_base + "button_sound-on.png"
+    image_sound_button_off = image_base + "button_sound-off.png"
+    image_banner = image_base + "banner.png"
+    image_intro = image_base + "intro_img.png"
 
 
-class MalletConstants:
+class HammerConstants:
     """
-    Constants used for rendering the mallet
+    Constants used for rendering the hammer
     """
 
-    MALLETWIDTH     = int(HoleConstants.HOLEWIDTH)
-    MALLETHEIGHT    = int(MALLETWIDTH)
+    hammer_width = int(HoleConstants.hole_width)
+    hammer_height = int(hammer_width)
 
-    MALLETROTNORM   = 15
-    MALLETROTHIT    = 60
+    hammer_normal_angle = 15
+    hammer_rotate_angle = 60
 
 
-class Constants(GameConstants, LevelConstants, HoleConstants, MoleConstants, TextConstants, ImageConstants, MalletConstants):
+class Constants(GameConstants, LevelConstants, HoleConstants, ZombieConstants, ImageConstants,
+                HammerConstants):
     """
     Stores all the constants used in the game
     """
-
-    DEBUGMODE       = False
-    LEFTMOUSEBUTTON = 1
+    left_mouse_button = 1

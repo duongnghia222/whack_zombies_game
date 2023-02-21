@@ -2,20 +2,21 @@ from random import randint, choice
 
 from pygame import image, transform, time
 
-from .constants import ImageConstants, MoleConstants, LevelConstants, HoleConstants
+from .constants import ImageConstants, ZombieConstants, LevelConstants, HoleConstants
 
 
-class Mole:
+class Zombie:
     """
-    Provides the mole used in game
+    Provides the zombie_ used in game
     """
 
     def __init__(self):
         # Load images
-        self.img_normal = image.load(ImageConstants.IMAGEMOLENORMAL)
-        self.img_normal = transform.scale(self.img_normal, (MoleConstants.MOLEWIDTH, MoleConstants.MOLEHEIGHT))
-        self.img_hit = image.load(ImageConstants.IMAGEMOLEHIT)
-        self.img_hit = transform.scale(self.img_hit, (MoleConstants.MOLEWIDTH, MoleConstants.MOLEHEIGHT))
+        self.img_normal = image.load(ImageConstants.image_zombie_normal)
+        self.img_normal = transform.scale(self.img_normal, (ZombieConstants.zombie_width,
+                                                            ZombieConstants.zombie_height))
+        self.img_hit = image.load(ImageConstants.image_zombie_hit)
+        self.img_hit = transform.scale(self.img_hit, (ZombieConstants.zombie_width, ZombieConstants.zombie_height))
 
         # State of showing animation
         # 0 = No, 1 = Doing Up, -1 = Doing Down
@@ -24,7 +25,7 @@ class Mole:
         # Hold timestamp for staying up
         self.showing_counter = 0
 
-        # Hold how long mole will stay up
+        # Hold how long zombie_ will stay up
         self.show_time = 0
 
         # Our current hole data
@@ -40,7 +41,8 @@ class Mole:
         # Cooldown from last popup
         self.cooldown = 0
 
-        # Indicates if mole is hit
+        # Indicates if zombie_ is hit
+        # Indicates if zombie_ is hit
         # False = Not hit, timestamp for stunned freeze
         self.hit = False
 
@@ -53,26 +55,27 @@ class Mole:
     def chance(self, level):
         level -= 1  # Start at 0
 
-        levelChance = 1 + ((LevelConstants.LEVELMOLECHANCE / 100) * level)
+        level_chance = 1 + ((LevelConstants.level_zombie_chance / 100) * level)
 
-        chance = int((MoleConstants.MOLECHANCE ** -1) * levelChance)
+        chance = int((ZombieConstants.zombie_chance ** -1) * level_chance)
         return chance
 
     def timeLimits(self, level):
         level -= 1  # Start at 0
 
-        levelTime = 1 - ((LevelConstants.LEVELMOLESPEED / 100) * level)
-        if levelTime < 0: levelTime = 0  # No wait, just up & down
+        level_time = 1 - ((LevelConstants.level_zombie_speed / 100) * level)
+        if level_time < 0:
+            level_time = 0  # No wait, just up & down
 
-        timeMin = int(MoleConstants.MOLEUPMIN * 1000 * levelTime)
-        timeMax = int(MoleConstants.MOLEUPMAX * 1000 * levelTime)
+        time_min = int(ZombieConstants.zombie_up_min * 1000 * level_time)
+        time_max = int(ZombieConstants.zombie_up_max * 1000 * level_time)
 
-        return (timeMin, timeMax)
+        return time_min, time_max
 
     def do_display(self, holes, level, do_tick=True):
         # If in cooldown
         if self.cooldown != 0:
-            if time.get_ticks() - self.cooldown < MoleConstants.MOLECOOLDOWN:
+            if time.get_ticks() - self.cooldown < ZombieConstants.zombie_cooldown:
                 return [False]
             else:
                 self.cooldown = 0
@@ -118,21 +121,21 @@ class Mole:
         return [(not self.showing_state == 0)]
 
     def get_base_pos(self):
-        holeX, holeY = self.current_hole
-        offset = (HoleConstants.HOLEWIDTH - MoleConstants.MOLEWIDTH) / 2
+        hole_x, hole_y = self.current_hole
+        offset = (HoleConstants.hole_width - ZombieConstants.zombie_width) / 2
 
-        moleX = holeX + offset
-        moleY = (holeY + HoleConstants.HOLEHEIGHT) - (MoleConstants.MOLEHEIGHT * 1.2)
-        return (moleX, moleY)
+        zombie_x = hole_x + offset
+        zombie_y = (hole_y + HoleConstants.hole_height) - (ZombieConstants.zombie_height * 1.2)
+        return zombie_x, zombie_y
 
     def get_hole_pos(self, do_tick=True):
-        moleX, moleY = self.get_base_pos()
+        zombie_x, zombie_y = self.get_base_pos()
 
         frame = 0
 
         # Stunned
-        if self.hit != False:
-            if time.get_ticks() - self.hit >= MoleConstants.MOLESTUNNED:
+        if self.hit:
+            if time.get_ticks() - self.hit >= ZombieConstants.zombie_stunned:
                 # Unfrozen after hit, hide
                 if self.showing_state != 0:
                     self.showing_state = -1
@@ -143,8 +146,9 @@ class Mole:
         # Going Up
         if self.showing_state == 1:
             if self.show_frame <= self.frames:
-                frame = MoleConstants.MOLEDEPTH / self.frames * (self.frames - self.show_frame)
-                if do_tick: self.show_frame += 1
+                frame = ZombieConstants.zombie_depth / self.frames * (self.frames - self.show_frame)
+                if do_tick:
+                    self.show_frame += 1
             else:
                 # Hold
                 if self.showing_counter == 0:
@@ -152,34 +156,36 @@ class Mole:
 
         # Going Down
         if self.showing_state == -1:
-            if do_tick: self.show_frame -= 1
+            if do_tick:
+                self.show_frame -= 1
             if self.show_frame >= 0:
-                frame = MoleConstants.MOLEDEPTH / self.frames * (self.frames - self.show_frame)
+                frame = ZombieConstants.zombie_depth / self.frames * (self.frames - self.show_frame)
             else:
                 # Reset
                 self.showing_state = 0
-                frame = MoleConstants.MOLEDEPTH
+                frame = ZombieConstants.zombie_depth
                 # Begin cooldown
-                if do_tick: self.cooldown = time.get_ticks()
+                if do_tick:
+                    self.cooldown = time.get_ticks()
 
-        moleY += (MoleConstants.MOLEHEIGHT * (frame / 100))
+        zombie_y += (ZombieConstants.zombie_height * (frame / 100))
 
-        return (moleX, moleY)
+        return zombie_x, zombie_y
 
     def is_hit(self, pos):
-        mouseX, mouseY = pos
+        mouse_x, mouse_y = pos
 
         # Top Left
-        moleX1, moleY1 = self.get_hole_pos(False)
+        zombie_x1, zombie_y1 = self.get_hole_pos(False)
         # Bottom Right
-        moleX2, moleY2 = (moleX1 + MoleConstants.MOLEWIDTH, moleY1 + MoleConstants.MOLEHEIGHT)
+        zombie_x2, zombie_y2 = (zombie_x1 + ZombieConstants.zombie_width, zombie_y1 + ZombieConstants.zombie_height)
 
         # Check is in valid to-be hit state
         if self.showing_state != 0:
             # Check x
-            if mouseX >= moleX1 and mouseX <= moleX2:
+            if zombie_x1 <= mouse_x <= zombie_x2:
                 # Check y
-                if mouseY >= moleY1 and mouseY <= moleY2:
+                if zombie_y1 <= mouse_y <= zombie_y2:
                     # Check is not stunned
                     if self.hit is False:
                         self.hit = time.get_ticks()
