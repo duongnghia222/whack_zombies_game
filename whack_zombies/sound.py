@@ -25,9 +25,9 @@ class SoundEffect:
         self.channel4.play(self.bam_sound)
 
     def play_game_theme(self):
-        # self.game_theme.play(-1)
         self.channel3.play(self.game_theme)
         pass
 
-    def stop_intro(self):
-        pygame.mixer.music.stop()
+
+def stop_intro():
+    pygame.mixer.music.stop()

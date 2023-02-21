@@ -2,7 +2,6 @@ class GameConstants:
     """
     Constants used for rendering of main game
     """
-
     game_width = int(1000 * 0.85)
     game_height = int(600 * 0.85)
     game_max_fps = 60
