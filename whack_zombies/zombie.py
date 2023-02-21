@@ -36,7 +36,7 @@ class Zombie:
         self.show_frame = 0
 
         # Total number of frames to show for popping up (not timed)
-        self.frames = 5
+        self.frames = 12
 
         # Cooldown from last popup
         self.cooldown = 0
@@ -53,7 +53,7 @@ class Zombie:
 
     def do_display(self, holes, level, do_tick=True):
         # If in cooldown
-        if self.cooldown != 0:
+        if self.cooldown:
             if time.get_ticks() - self.cooldown < ZombieConstants.zombie_cooldown:
                 return [False]
             else:
@@ -64,18 +64,21 @@ class Zombie:
         if do_tick:
             # Random choice if not showing
             new_hole = False
-            if self.showing_state == 0 and holes:
+            if self.showing_state == 0 and holes:  # if zombie is not appearing
                 # Reset
                 self.show_frame = 0
                 self.hit = False
 
                 # Pick
+                # print(chance(level))
                 random = randint(0, chance(level))
                 if random == 0:
+                    # print('hey')
                     self.showing_state = 1
                     self.showing_counter = 0
 
                     self.show_time = randint(*time_limits(level))
+                    print(*time_limits(level))
 
                     # Pick a new hole, don't pick the last one, don't infinite loop
                     self.current_hole = self.last_hole
@@ -161,9 +164,9 @@ class Zombie:
         # Check is in valid to-be hit state
         if self.showing_state != 0:
             # Check x
-            if zombie_x1 <= mouse_x <= zombie_x2:
+            if zombie_x1 - 30 <= mouse_x <= zombie_x2:
                 # Check y
-                if zombie_y1 <= mouse_y <= zombie_y2:
+                if zombie_y1 - 20 <= mouse_y <= zombie_y2:
                     # Check is not stunned
                     if self.hit is False:
                         self.hit = time.get_ticks()

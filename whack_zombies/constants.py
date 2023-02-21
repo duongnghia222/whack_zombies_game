@@ -12,8 +12,8 @@ class LevelConstants:
     Constants used to handle leveling
     """
 
-    level_gap = 10  # score
-    level_zombie_speed = 5  # % faster
+    level_gap = 8  # score
+    level_zombie_speed = 20  # % faster
     level_zombie_chance = 10  # % less
 
 
@@ -48,8 +48,8 @@ class ZombieConstants:
     zombie_hit_hud = 500  # ms
     zombie_miss_hud = 250  # ms
 
-    zombie_chance = 1 / 30
     zombie_count = 2  # !!
+    zombie_chance = 1 / 10
     zombie_up_min = 0.3  # s
     zombie_up_max = 2  # s
 
