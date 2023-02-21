@@ -3,6 +3,7 @@ import pygame
 
 class SoundEffect:
     def __init__(self):
+        self.play_music = True
         pygame.mixer.music.load("assets/sounds/intro.mp3")
         pygame.mixer.music.play(-1)
         self.game_theme = pygame.mixer.Sound("assets/sounds/game_theme.wav")

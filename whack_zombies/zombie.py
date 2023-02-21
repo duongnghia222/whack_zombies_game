@@ -96,7 +96,7 @@ class Zombie:
                 return [True, 0, self.current_hole]
 
         # Return if game should display
-        return [(not self.showing_state == 0)]
+        return [self.showing_state != 0]
 
     def get_base_pos(self):
         hole_x, hole_y = self.current_hole

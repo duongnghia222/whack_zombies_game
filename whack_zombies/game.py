@@ -78,24 +78,19 @@ class Game:
         self.show_hit = 0
         self.show_miss = 0
         self.loop = True
+        self.game_running = False
         self.clock = time.Clock()
         # Allow for game timer
-
         self.timer_start = 0
         # Reset/initialise data
         self.reset()
+        self.time_up = False
 
         # Run
         if autostart:
-            self.run()
+            self.start()
 
-    def reset(self):
-        # Load zombies
-        self.zombies = [Zombie() for _ in range(Constants.zombie_count)]
-
-        # Generate hole positions
-        self.holes = []
-        self.used_holes = []
+    def make_holes(self):
         base_row = Constants.game_height / Constants.hole_row - 50
         base_column = Constants.game_width / Constants.hole_column - 100
         for row in range(Constants.hole_row):
@@ -106,6 +101,15 @@ class Game:
                 this_x += (base_column - Constants.hole_width) / 2
                 self.holes.append((int(this_x), int(row_y)))
 
+    def reset(self):
+        # Load zombies
+        self.zombies = [Zombie() for _ in range(Constants.zombie_count)]
+
+        # Generate hole positions
+        self.holes = []
+        self.used_holes = []
+        self.make_holes()
+
         # Get the score object
         self.score = Score()
 
@@ -115,62 +119,48 @@ class Game:
 
         # Allow for game timer
         self.timer_start = 0
+        self.game_running = False
+        self.time_up = False
 
     @property
     def timerData(self):
-        if self.timer is not None and self.timer_start != 0:
-            remain = (time.get_ticks() - self.timer_start) / 1000
-            remain = self.timer - remain
-            end_game = True if remain <= 0 else False
-            return remain, end_game
-        return None, False
+        if self.timer is None or self.timer_start == 0:
+            return None
+        remain = (time.get_ticks() - self.timer_start) / 1000  # get remain time (in second)
+        remain = self.timer - remain
+        self.time_up = True if remain <= 0 else False
+        return remain
 
     def loop_events(self):
-
         hit = False
         miss = False
-        clicked = False
         pos = mouse.get_pos()
-
         # Handle PyGame events
         for e in event.get():
-
             # Handle quit
             if e.type == QUIT:
                 self.loop = False
                 break
-
-            game_time, end_game = self.timerData
-
-            if not end_game:
-
+            if not self.time_up:
                 # Handle click
                 if e.type == MOUSEBUTTONDOWN and e.button == Constants.left_mouse_button:
+                    # Avoid hammer can not rotate due to too short time
+                    self.cool_down_time_for_hammer = time.get_ticks() + 50
+                    # Handle hit/miss
+                    miss = True
+                    for zombie in self.zombies:
+                        if zombie.is_hit(pos) == 1:  # Hit
+                            hit = True
+                            miss = False
+                        if zombie.is_hit(pos) == 2:  # Hit but stunned
+                            miss = False
 
-                    # Start timer if not started
-                    if self.timer is not None and self.timer_start == 0:
-                        mixer.music.stop()
-                        self.sound_effect.play_game_theme()
-                        self.timer_start = time.get_ticks()
-
-                    else:
-                        # Handle hit/miss
-                        clicked = True
-                        miss = True
-                        for zombie in self.zombies:
-                            if zombie.is_hit(pos) == 1:  # Hit
-                                hit = True
-                                miss = False
-                            if zombie.is_hit(pos) == 2:  # Hit but stunned
-                                miss = False
-
-                        if hit:
-                            self.score.hit()
-                        if miss:
-                            self.score.miss()
+                    if hit:
+                        self.score.hit()
+                    if miss:
+                        self.score.miss()
 
                 if e.type == KEYDOWN:
-
                     # Allow escape to abort attempt
                     if e.key == K_ESCAPE:
                         self.reset()
@@ -184,12 +174,12 @@ class Game:
                         self.reset()
                         break
 
-        return clicked, hit, miss
+        return hit, miss
 
     def loop_display(self, hit, miss):
-        game_time, end_game = self.timerData
-        if not game_time and self.timer:
-            game_time = -1
+        remain_time = self.timerData
+        if not remain_time and self.timer:
+            remain_time = -1
 
         # Display bg
         self.screen.blit(self.img_background, (0, 0))
@@ -198,25 +188,19 @@ class Game:
         self.screen.blit(self.banner, (0, 0))
 
         # Display text
-        # points_text = self.font.render(f'Points: {self.timer}', True, 'black')
         points_text = self.font.render(self.score.show_score(), True, 'black')
         self.screen.blit(points_text, (70, 40))
 
-        points_text = self.font.render(self.score.show_hits(), True, 'black')
-        self.screen.blit(points_text, (270, 40))
+        hits_text = self.font.render(self.score.show_hits(), True, 'black')
+        self.screen.blit(hits_text, (270, 40))
 
-        points_text = self.font.render(self.score.show_misses(), True, 'black')
-        self.screen.blit(points_text, (470, 40))
+        misses_text = self.font.render(self.score.show_misses(), True, 'black')
+        self.screen.blit(misses_text, (470, 40))
 
-        time_display = game_time
-        if time_display < 0:
-            time_display = 0
-        points_text = self.font.render("{}".format(round(time_display, 2)), True, 'black')
+        if remain_time < 0:
+            remain_time = 0
+        points_text = self.font.render("{}".format(round(remain_time, 1)), True, 'black')
         self.screen.blit(points_text, (690, 40))
-
-        # Display sound button
-        # if self.game_theme_on:
-        #     self.screen.blit(self.play_button_off, (700, 30))
 
         # Display holes
         for position in self.holes:
@@ -225,7 +209,7 @@ class Game:
         # Display zombies
         for zombie in self.zombies:
             holes = [f for f in self.holes if f not in self.used_holes]
-            zombie_display = zombie.do_display(holes, self.score.level, not end_game)
+            zombie_display = zombie.do_display(holes, self.score.level, not self.time_up)
 
             # If new/old hole given
             if len(zombie_display) > 1:
@@ -235,10 +219,10 @@ class Game:
                     if zombie_display[2] in self.used_holes:
                         self.used_holes.remove(zombie_display[2])
 
-            # If should display
+            # If game should display
             if zombie_display[0]:
                 # Get pos and display
-                pos = zombie.get_hole_pos(not end_game)
+                pos = zombie.get_hole_pos(not self.time_up)
                 self.screen.blit(zombie.image, (pos[0] - 15, pos[1]))
 
         # Hammer
@@ -254,20 +238,21 @@ class Game:
             self.screen.blit(this_hammer, (hammer_x, hammer_y))
 
         # Fade screen if not started or has ended
-        if self.timer and end_game:
+        if self.timer and self.time_up:
             overlay = Surface((Constants.game_width, Constants.game_height), SRCALPHA, 32)
             overlay = overlay.convert_alpha()
             overlay.fill((100, 100, 100, 0.9 * 255))
             self.screen.blit(overlay, (0, 0))
 
         # Display hit/miss indicators
-        if not end_game:
+        if not self.time_up:
 
             # Hit indicator
             if hit:
                 self.show_hit = time.get_ticks()
             if self.show_hit > 0 and time.get_ticks() - self.show_hit <= Constants.zombie_hit_hud:
                 hit_x, hit_y = mouse.get_pos()
+                # effect
                 self.screen.blit(self.hit_effect, (hit_x - 30, hit_y - 30))
                 self.sound_effect.play_bam_sound()
                 self.sound_effect.play_hurt_sound()
@@ -279,19 +264,20 @@ class Game:
                 self.show_miss = time.get_ticks()
             if self.show_miss > 0 and time.get_ticks() - self.show_miss <= Constants.zombie_miss_hud:
                 miss_x, miss_y = mouse.get_pos()
+                # effect
                 self.screen.blit(self.miss_effect, (miss_x, miss_y))
                 self.sound_effect.play_miss_sound()
             else:
                 self.show_miss = 0
 
-        # Click to start indicator
-        if self.timer and game_time == -1:
-            self.screen.blit(self.img_intro, (0, 0))
-            best_scores = self.big_font.render("{}".format(self.best_scores), True, 'black')
-            self.screen.blit(best_scores, (660, 380))
+        # # Click to start indicator
+        # if self.timer and remain_time == -1:
+        #     self.screen.blit(self.img_intro, (0, 0))
+        #     best_scores = self.big_font.render("{}".format(self.best_scores), True, 'black')
+        #     self.screen.blit(best_scores, (660, 380))
 
         # Time's up indicator
-        if self.timer and end_game:
+        if self.timer and self.time_up:
             temp_best_score = int(self.score.show_score())
             if temp_best_score > self.best_scores:
                 self.best_scores = temp_best_score
@@ -308,21 +294,26 @@ class Game:
             self.screen.blit(text1, (250, 400))
 
     def start(self):
-        self.clock = time.Clock()
-        self.loop = True
-
         while self.loop:
-            # Do all events
-            clicked, hit, miss = self.loop_events()
-            if clicked:
-                self.cool_down_time_for_hammer = time.get_ticks() + 50
-            # Do all render
-            self.loop_display(hit, miss)
+            #  if game has not started display the intro img
+            if not self.game_running:
+                self.screen.blit(self.img_intro, (0, 0))
+                best_scores = self.big_font.render("{}".format(self.best_scores), True, 'black')
+                self.screen.blit(best_scores, (660, 380))
+                for e in event.get():
+                    if e.type == MOUSEBUTTONDOWN and e.button == Constants.left_mouse_button:
+                        self.game_running = True
+                        mixer.music.stop()
+                        self.sound_effect.play_game_theme()
+                        self.timer_start = time.get_ticks()
+            else:
+                # Do all events
+                hit, miss = self.loop_events()
+                # Do all render
+                self.loop_display(hit, miss)
 
             # Update display
             self.clock.tick(Constants.game_max_fps)
             display.flip()
 
-    def run(self):
-        self.start()
-        quit()
+
