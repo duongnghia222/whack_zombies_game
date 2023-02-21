@@ -8,7 +8,7 @@ A simple Whack a Mole game written with PyGame
 """
 import random
 
-from pygame import init, mixer, display, image, transform, time, mouse, event, Surface, \
+from pygame import init, mixer, font, display, image, transform, time, mouse, event, Surface, \
     SRCALPHA, QUIT, MOUSEBUTTONDOWN, KEYDOWN, \
     K_e, K_r, K_t, K_y, K_u, K_i, K_o, K_p, K_SPACE, K_ESCAPE
 
@@ -34,9 +34,15 @@ class Game:
         self.screen = display.set_mode((Constants.GAMEWIDTH, Constants.GAMEHEIGHT))
         display.set_caption(Constants.TEXTTITLE)
 
+
         # Load background
         self.img_background = image.load(Constants.IMAGEBACKGROUND)
         self.img_background = transform.scale(self.img_background, (Constants.GAMEWIDTH, Constants.GAMEHEIGHT))
+        self.img_intro = image.load(Constants.image_intro)
+        self.img_intro = transform.scale(self.img_intro, (Constants.GAMEWIDTH, Constants.GAMEHEIGHT))
+        # Load banner
+        self.banner = image.load(Constants.image_banner)
+        self.banner = transform.scale(self.banner, (850, 90))
 
         # Load button
         self.play_button = image.load(Constants.IMAGEPLAYBUTTON)
@@ -62,11 +68,24 @@ class Game:
         self.miss_effect = image.load(Constants.IMAGEMISSEFFECT)
         self.miss_effect = transform.scale(self.miss_effect, (612 * 0.1, 408 * 0.1))
 
+        # Load font
+        self.font = font.Font('assets/myFont.ttf', 40)
+        self.big_font = font.Font('assets/myFont.ttf', 85)
+
+        display.set_icon(self.img_mallet)
+
         # Set timer
         self.timer = timer
         self.cool_down_time_for_hammer = 0
 
         self.game_theme_on = True
+
+        # Load high score
+        file = open('high_scores.txt', 'r')
+        read_file = file.readlines()
+        file.close()
+        self.best_scores = int(read_file[0])
+        print(self.best_scores)
         # Reset/initialise data
         self.reset()
 
@@ -208,9 +227,26 @@ class Game:
         # Display bg
         self.screen.blit(self.img_background, (0, 0))
 
+        # Display banner
+        self.screen.blit(self.banner, (0, 0))
+
+        # Display text
+        # points_text = self.font.render(f'Points: {self.timer}', True, 'black')
+        points_text = self.font.render(self.score.show_score(), True, 'black')
+        self.screen.blit(points_text, (70, 40))
+
+        points_text = self.font.render(self.score.show_hits(), True, 'black')
+        self.screen.blit(points_text, (270, 40))
+
+        points_text = self.font.render(self.score.show_misses(), True, 'black')
+        self.screen.blit(points_text, (470, 40))
+
+        points_text = self.font.render("{}".format(round(gameTime, 2)), True, 'black')
+        self.screen.blit(points_text, (690, 40))
+
         # Display sound button
-        if self.game_theme_on:
-            self.screen.blit(self.play_button_off, (700, 30))
+        # if self.game_theme_on:
+        #     self.screen.blit(self.play_button_off, (700, 30))
 
         # Display holes
         for position in self.holes:
@@ -244,7 +280,8 @@ class Game:
         hammer_x, hammer_y = mouse.get_pos()
         hammer_x -= thisHammer.get_width() / 5
         hammer_y -= thisHammer.get_height() / 4 + 30
-        self.screen.blit(thisHammer, (hammer_x, hammer_y))
+        if hammer_y > 40:
+            self.screen.blit(thisHammer, (hammer_x, hammer_y))
 
         # Fade screen if not started or has ended
         if self.timer and (endGame or gameTime == -1):
@@ -264,8 +301,8 @@ class Game:
             }
 
         # Display data readout
-        data = self.score.label(timer=gameTime, debug=debug_data, size=(1.5 if endGame else 1))
-        self.screen.blit(data, (5, 5))
+        # data = self.score.label(timer=gameTime, debug=debug_data, size=(1.5 if endGame else 1))
+        # self.screen.blit(data, (5, 5))
 
         # Display hit/miss indicators
         if not endGame:
@@ -276,6 +313,7 @@ class Game:
             if self.show_hit > 0 and time.get_ticks() - self.show_hit <= Constants.MOLEHITHUD:
                 hit_x, hit_y = mouse.get_pos()
                 self.screen.blit(self.hit_effect, (hit_x - 30, hit_y - 30))
+                self.sound_effect.play_bam_sound()
                 self.sound_effect.play_hurt_sound()
             else:
                 self.show_hit = 0
@@ -292,14 +330,17 @@ class Game:
 
         # Click to start indicator
         if self.timer and gameTime == -1:
-            # mixer.music.stop()
-            # timer_label = self.text.get_label("Click to begin...", scale=2, color=(0, 255, 255))
-            timer_x = Constants.GAMEWIDTH / 2 - 50
-            timer_y = Constants.GAMEHEIGHT / 2 - 50
-            self.screen.blit(self.play_button, (timer_x, timer_y))
+            self.screen.blit(self.img_intro, (0, 0))
+            best_scores = self.big_font.render("{}".format(self.best_scores), True, 'black')
+            self.screen.blit(best_scores, (660, 380))
 
         # Time's up indicator
         if self.timer and endGame:
+            temp_best_score = int(self.score.show_score())
+            if temp_best_score > self.best_scores:
+                file = open('high_scores.txt', 'w')
+                file.write(f'{temp_best_score}')
+                file.close()
             timer_label_1 = self.text.get_label("Time's up!", scale=3, color=(0, 150, 255))
             timer_label_2 = self.text.get_label("Press space to restart...", scale=2, color=(0, 150, 255))
 

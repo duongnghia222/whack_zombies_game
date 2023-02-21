@@ -21,9 +21,19 @@ class Score:
         self.misses = 0
         self.text = text
 
+
     @property
     def score(self):
-        return (self.hits - (self.misses / 2)) * 2
+        score = (self.hits - (self.misses / 2)) * 2
+        if score < 0:
+            score = 0
+        return score
+
+    def hit_rate(self):
+        if self.misses + self.hits == 0:
+            return 0
+        else:
+            return int((self.hits/(self.misses + self.hits))*100)
 
     @property
     def level(self):
@@ -35,6 +45,22 @@ class Score:
     @property
     def attempts(self):
         return self.hits + self.misses
+
+    def show_score(self):
+        text = "{}".format(int(self.score))
+        return text
+
+    def show_hit_rate(self):
+        text = "{} %".format(self.hit_rate())
+        return text
+
+    def show_hits(self):
+        text = "{}".format(int(self.hits))
+        return text
+
+    def show_misses(self):
+        text = "{}".format(int(self.misses))
+        return text
 
     def disp_score(self, timer, debug):
         # Generate hit/miss data

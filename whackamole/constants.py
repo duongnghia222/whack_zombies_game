@@ -62,7 +62,7 @@ class MoleConstants:
     MOLEMISSHUD     = 250 #ms
 
     MOLECHANCE      = 1/30
-    MOLECOUNT       = 3 # !!
+    MOLECOUNT       = 2 # !!
     MOLEUPMIN       = 0.3 #s
     MOLEUPMAX       = 2 #s
 
@@ -76,7 +76,7 @@ class TextConstants:
     Constants used for text rendering
     """
 
-    TEXTTITLE       = "Whack a Mole"
+    TEXTTITLE       = "Whack a Zombie"
     TEXTFONTSIZE    = 15
     TEXTFONTFILE    = "assets/OxygenMono-Regular.ttf"
 
@@ -93,13 +93,15 @@ class ImageConstants:
     IMAGEMOLENORMAL = IMAGEBASE + "zombie_rm.png"
     IMAGEMOLEHIT    = IMAGEBASE + "zombie_hit_rm.png"
 
-    IMAGEHOLE       = IMAGEBASE + "hole.png"
+    IMAGEHOLE       = IMAGEBASE + "hole2.png"
     IMAGEMALLET     = IMAGEBASE + "hammer_rm.png"
     IMAGEHITEFFECT     = IMAGEBASE + "hit_effect_rm.png"
     IMAGEMISSEFFECT     = IMAGEBASE + "miss_effect_rm.png"
     IMAGEPLAYBUTTON     = IMAGEBASE + "button_play.png"
     image_sound_button_on     = IMAGEBASE + "button_sound-on.png"
     image_sound_button_off     = IMAGEBASE + "button_sound-off.png"
+    image_banner     = IMAGEBASE + "banner.png"
+    image_intro     = IMAGEBASE + "intro_img.png"
 
 
 class MalletConstants:
