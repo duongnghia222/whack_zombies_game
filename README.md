@@ -1,3 +1,5 @@
-# Whack zombie
+# Whack zombies
 
-draft
+!!! remake\
+require pygame\
+run main.py
