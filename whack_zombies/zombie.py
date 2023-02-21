@@ -7,7 +7,7 @@ from .constants import ImageConstants, ZombieConstants, LevelConstants, HoleCons
 
 class Zombie:
     """
-    Provides the zombie_ used in game
+    Provides the zombie used in game
     """
 
     def __init__(self):
@@ -25,7 +25,7 @@ class Zombie:
         # Hold timestamp for staying up
         self.showing_counter = 0
 
-        # Hold how long zombie_ will stay up
+        # Hold how long zombie will stay up
         self.show_time = 0
 
         # Our current hole data
@@ -41,8 +41,7 @@ class Zombie:
         # Cooldown from last popup
         self.cooldown = 0
 
-        # Indicates if zombie_ is hit
-        # Indicates if zombie_ is hit
+        # Indicates if zombie is hit
         # False = Not hit, timestamp for stunned freeze
         self.hit = False
 
@@ -51,26 +50,6 @@ class Zombie:
         if self.hit:
             return self.img_hit
         return self.img_normal
-
-    def chance(self, level):
-        level -= 1  # Start at 0
-
-        level_chance = 1 + ((LevelConstants.level_zombie_chance / 100) * level)
-
-        chance = int((ZombieConstants.zombie_chance ** -1) * level_chance)
-        return chance
-
-    def timeLimits(self, level):
-        level -= 1  # Start at 0
-
-        level_time = 1 - ((LevelConstants.level_zombie_speed / 100) * level)
-        if level_time < 0:
-            level_time = 0  # No wait, just up & down
-
-        time_min = int(ZombieConstants.zombie_up_min * 1000 * level_time)
-        time_max = int(ZombieConstants.zombie_up_max * 1000 * level_time)
-
-        return time_min, time_max
 
     def do_display(self, holes, level, do_tick=True):
         # If in cooldown
@@ -83,7 +62,6 @@ class Zombie:
 
         # If doing a tick
         if do_tick:
-
             # Random choice if not showing
             new_hole = False
             if self.showing_state == 0 and holes:
@@ -92,12 +70,12 @@ class Zombie:
                 self.hit = False
 
                 # Pick
-                random = randint(0, self.chance(level))
+                random = randint(0, chance(level))
                 if random == 0:
                     self.showing_state = 1
                     self.showing_counter = 0
 
-                    self.show_time = randint(*self.timeLimits(level))
+                    self.show_time = randint(*time_limits(level))
 
                     # Pick a new hole, don't pick the last one, don't infinite loop
                     self.current_hole = self.last_hole
@@ -193,3 +171,20 @@ class Zombie:
                     else:
                         return 2
         return False
+
+
+def time_limits(level):
+    level -= 1  # Start at 0
+    level_time = 1 - ((LevelConstants.level_zombie_speed / 100) * level)
+    if level_time < 0:
+        level_time = 0  # No wait, just up & down
+    time_min = int(ZombieConstants.zombie_up_min * 1000 * level_time)
+    time_max = int(ZombieConstants.zombie_up_max * 1000 * level_time)
+    return time_min, time_max
+
+
+def chance(level):
+    level -= 1  # Start at 0
+    level_chance = 1 + ((LevelConstants.level_zombie_chance / 100) * level)
+    chance_ = int((ZombieConstants.zombie_chance ** -1) * level_chance)
+    return chance_

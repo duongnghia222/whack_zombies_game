@@ -239,7 +239,7 @@ class Game:
             if zombie_display[0]:
                 # Get pos and display
                 pos = zombie.get_hole_pos(not end_game)
-                self.screen.blit(zombie.image, pos)
+                self.screen.blit(zombie.image, (pos[0] - 15, pos[1]))
 
         # Hammer
         if time.get_ticks() < self.cool_down_time_for_hammer:
