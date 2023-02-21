@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-Whack a Mole
-~~~~~~~~~~~~~~~~~~~
-A simple Whack a Mole game written with PyGame
-:copyright: (c) 2018 Matt Cowley (IPv4)
-"""
-
-"""Search for '# !!' in the file to find the most common constant to change."""
-
-
 class GameConstants:
     """
     Constants used for rendering of main game

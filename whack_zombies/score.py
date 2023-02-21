@@ -1,14 +1,4 @@
-# -*- coding: utf-8 -*-
-
-"""
-Whack a Mole
-~~~~~~~~~~~~~~~~~~~
-A simple Whack a Mole game written with PyGame
-:copyright: (c) 2018 Matt Cowley (IPv4)
-"""
-
 from .constants import LevelConstants, GameConstants
-from .text import Text
 
 
 class Score:
@@ -16,10 +6,9 @@ class Score:
     Handles the scoring for the player
     """
 
-    def __init__(self, text: Text):
+    def __init__(self):
         self.hits = 0
         self.misses = 0
-        self.text = text
 
 
     @property

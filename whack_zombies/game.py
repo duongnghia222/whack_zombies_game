@@ -1,21 +1,10 @@
-# -*- coding: utf-8 -*-
-
-"""
-Whack a Mole
-~~~~~~~~~~~~~~~~~~~
-A simple Whack a Mole game written with PyGame
-:copyright: (c) 2018 Matt Cowley (IPv4)
-"""
-import random
-
 from pygame import init, mixer, font, display, image, transform, time, mouse, event, Surface, \
     SRCALPHA, QUIT, MOUSEBUTTONDOWN, KEYDOWN, \
     K_e, K_r, K_t, K_y, K_u, K_i, K_o, K_p, K_SPACE, K_ESCAPE
 
 from .constants import Constants
-from .mole import Mole
+from .zombie import Mole
 from .score import Score
-from .text import Text
 from .sound import SoundEffect
 
 
@@ -85,7 +74,6 @@ class Game:
         read_file = file.readlines()
         file.close()
         self.best_scores = int(read_file[0])
-        print(self.best_scores)
         # Reset/initialise data
         self.reset()
 
@@ -111,11 +99,9 @@ class Game:
                 thisX += (base_column - Constants.HOLEWIDTH) / 2
                 self.holes.append((int(thisX), int(rowY)))
 
-        # Get the text object
-        self.text = Text()
 
         # Get the score object
-        self.score = Score(self.text)
+        self.score = Score()
 
         # Indicates whether the HUD indicators should be displayed
         self.show_hit = 0

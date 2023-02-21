@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-Whack a Mole
-~~~~~~~~~~~~~~~~~~~
-A simple Whack a Mole game written with PyGame
-:copyright: (c) 2018 Matt Cowley (IPv4)
-"""
-
 from random import randint, choice
 
 from pygame import image, transform, time
@@ -55,7 +46,8 @@ class Mole:
 
     @property
     def image(self):
-        if self.hit != False: return self.img_hit
+        if self.hit:
+            return self.img_hit
         return self.img_normal
 
     def chance(self, level):
