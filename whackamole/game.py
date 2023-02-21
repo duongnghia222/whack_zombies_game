@@ -241,7 +241,10 @@ class Game:
         points_text = self.font.render(self.score.show_misses(), True, 'black')
         self.screen.blit(points_text, (470, 40))
 
-        points_text = self.font.render("{}".format(round(gameTime, 2)), True, 'black')
+        time_display = gameTime
+        if time_display < 0:
+            time_display = 0
+        points_text = self.font.render("{}".format(round(time_display, 2)), True, 'black')
         self.screen.blit(points_text, (690, 40))
 
         # Display sound button
@@ -338,20 +341,18 @@ class Game:
         if self.timer and endGame:
             temp_best_score = int(self.score.show_score())
             if temp_best_score > self.best_scores:
+                self.best_scores = temp_best_score
                 file = open('high_scores.txt', 'w')
                 file.write(f'{temp_best_score}')
                 file.close()
-            timer_label_1 = self.text.get_label("Time's up!", scale=3, color=(0, 150, 255))
-            timer_label_2 = self.text.get_label("Press space to restart...", scale=2, color=(0, 150, 255))
 
-            timer_x_1 = (Constants.GAMEWIDTH - timer_label_1.get_width()) / 2
-            timer_x_2 = (Constants.GAMEWIDTH - timer_label_2.get_width()) / 2
+            text = self.big_font.render("Time's up!", True, 'black')
+            text1 = self.font.render("Press space to restart...", True, 'black')
+            text2 = self.font.render("Your Score: {}".format(temp_best_score), True, 'black')
 
-            timer_y_1 = (Constants.GAMEHEIGHT / 2) - timer_label_1.get_height()
-            timer_y_2 = (Constants.GAMEHEIGHT / 2)
-
-            self.screen.blit(timer_label_1, (timer_x_1, timer_y_1))
-            self.screen.blit(timer_label_2, (timer_x_2, timer_y_2))
+            self.screen.blit(text, (250, 80))
+            self.screen.blit(text2, (250, 250))
+            self.screen.blit(text1, (250, 400))
 
     def start(self):
         self.clock = time.Clock()
