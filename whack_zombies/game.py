@@ -34,8 +34,6 @@ class Game:
         self.banner = transform.scale(self.banner, (850, 90))
 
         # Load button
-        self.play_button = image.load(Constants.IMAGEPLAYBUTTON)
-        self.play_button = transform.scale(self.play_button, (100, 100))
         self.play_button_on = image.load(Constants.image_sound_button_on)
         self.play_button_on = transform.scale(self.play_button_on, (50, 50))
         self.play_button_off = image.load(Constants.image_sound_button_off)

@@ -11,7 +11,6 @@ class SoundEffect:
         self.channel2 = pygame.mixer.Channel(1)
         self.channel3 = pygame.mixer.Channel(2)
         self.channel4 = pygame.mixer.Channel(3)
-        self.pop_sound = pygame.mixer.Sound("assets/sounds/pop.mp3")
         self.hurt_sound = pygame.mixer.Sound("assets/sounds/hurt.wav")
         self.miss_sound = pygame.mixer.Sound("assets/sounds/miss.mp3")
         self.bam_sound = pygame.mixer.Sound("assets/sounds/bam.mp3")
@@ -20,12 +19,6 @@ class SoundEffect:
     def play_miss_sound(self):
         #self.miss_sound.play()
         self.channel1.play(self.miss_sound)
-
-    def play_pop_sound(self):
-        self.pop_sound.play()
-
-    def stop_pop_sound(self):
-        self.pop_sound.stop()
 
     def play_hurt_sound(self):
         # self.hurt_sound.play()
