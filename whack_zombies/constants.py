@@ -78,7 +78,7 @@ class ImageConstants:
     image_sound_button_on = image_base + "button_sound-on.png"
     image_sound_button_off = image_base + "button_sound-off.png"
     image_banner = image_base + "banner.png"
-    image_intro = image_base + "intro_img.png"
+    image_intro = image_base + "intro_img2.png"
 
 
 class HammerConstants:

@@ -42,7 +42,7 @@ class Zombie:
         self.cooldown = 0
 
         # Indicates if zombie is hit
-        # False = Not hit, timestamp for stunned freeze
+        # False = Not hit, timestamp for stunned freeze (boolean / int)
         self.hit = False
 
     @property
@@ -69,16 +69,14 @@ class Zombie:
                 self.show_frame = 0
                 self.hit = False
 
-                # Pick
+                # Pick a hole
                 # print(chance(level))
                 random = randint(0, chance(level))
                 if random == 0:
-                    # print('hey')
                     self.showing_state = 1
                     self.showing_counter = 0
 
                     self.show_time = randint(*time_limits(level))
-                    print(*time_limits(level))
 
                     # Pick a new hole, don't pick the last one, don't infinite loop
                     self.current_hole = self.last_hole

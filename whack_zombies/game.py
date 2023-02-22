@@ -1,5 +1,5 @@
 from pygame import init, mixer, font, display, image, transform, time, mouse, event, Surface, \
-    SRCALPHA, QUIT, MOUSEBUTTONDOWN, KEYDOWN, K_SPACE, K_ESCAPE
+    SRCALPHA, QUIT, MOUSEBUTTONDOWN, KEYDOWN, K_SPACE, K_ESCAPE, K_q
 
 from .constants import Constants
 from .zombie import Zombie
@@ -47,11 +47,11 @@ class Game:
 
         # Load hit effect
         self.hit_effect = image.load(Constants.image_hit_effect)
-        self.hit_effect = transform.scale(self.hit_effect, (840*0.1, 774*0.1))
+        self.hit_effect = transform.scale(self.hit_effect, (520*0.2, 479*0.2))
 
         # Load miss effect
         self.miss_effect = image.load(Constants.image_miss_effect)
-        self.miss_effect = transform.scale(self.miss_effect, (612 * 0.1, 408 * 0.1))
+        self.miss_effect = transform.scale(self.miss_effect, (612 * 0.2, 408 * 0.2))
 
         # Load font
         self.font = font.Font('assets/myFont.ttf', 40)
@@ -168,11 +168,10 @@ class Game:
 
             # End game screen
             else:
-                if e.type == KEYDOWN:
-                    if e.key == K_SPACE:
-                        # Restart
-                        self.reset()
-                        break
+                if e.type == MOUSEBUTTONDOWN and e.button == Constants.left_mouse_button:
+                    # Restart
+                    self.reset()
+                    break
 
         return hit, miss
 
@@ -237,7 +236,7 @@ class Game:
         if hammer_y > 40:
             self.screen.blit(this_hammer, (hammer_x, hammer_y))
 
-        # Fade screen if not started or has ended
+        # Fade if game has ended
         if self.timer and self.time_up:
             overlay = Surface((Constants.game_width, Constants.game_height), SRCALPHA, 32)
             overlay = overlay.convert_alpha()
@@ -286,7 +285,7 @@ class Game:
                 file.close()
 
             text = self.big_font.render("Time's up!", True, 'black')
-            text1 = self.font.render("Press space to restart...", True, 'black')
+            text1 = self.font.render("Click anywhere to restart...", True, 'black')
             text2 = self.font.render("Your Score: {}".format(temp_best_score), True, 'black')
 
             self.screen.blit(text, (250, 80))
@@ -299,8 +298,12 @@ class Game:
             if not self.game_running:
                 self.screen.blit(self.img_intro, (0, 0))
                 best_scores = self.big_font.render("{}".format(self.best_scores), True, 'black')
-                self.screen.blit(best_scores, (660, 380))
+                self.screen.blit(best_scores, (640, 360))
                 for e in event.get():
+                    if e.type == QUIT:
+                        print('quit')
+                        self.loop = False
+                        break
                     if e.type == MOUSEBUTTONDOWN and e.button == Constants.left_mouse_button:
                         self.game_running = True
                         mixer.music.stop()
